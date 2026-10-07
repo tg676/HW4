@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Campus Customs: App Check (Problem 11)</title>
+<style>
+  :root { --yale: #00356b; --cream: #f6f1e7; --paper: #fbf8f2; --brass: #c8a24a; --text: #16213a; --muted: #5d6475; --border: #e4ddcf; --pass: #1f7a3d; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--text); background: var(--paper); line-height: 1.55; }
+  header { background: var(--yale); color: var(--cream); padding: 32px 24px 28px; box-shadow: 0 4px 0 var(--cream), 0 8px 0 var(--yale); }
+  header h1 { margin: 0 0 6px; font-family: Georgia, serif; font-size: 2rem; }
+  header p { margin: 0; opacity: .9; }
+  main { max-width: 1000px; margin: 0 auto; padding: 30px 20px 60px; }
+  .meta { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 26px; font-size: .95rem; }
+  .meta ul { margin: 6px 0 0; padding-left: 20px; }
+  .toc { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 34px; }
+  .toc a { display: block; background: #fff; border: 1px solid var(--border); border-left: 5px solid var(--yale); border-radius: 10px; padding: 12px 14px; text-decoration: none; color: var(--text); }
+  .toc a b { display: block; color: var(--yale); }
+  .toc .pass { color: var(--pass); font-weight: 700; font-size: .85rem; }
+  section.check { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 26px 26px 20px; margin-bottom: 34px; }
+  section.check > h2 { margin: 0 0 4px; color: var(--yale); font-family: Georgia, serif; font-size: 1.55rem; }
+  .status { display: inline-block; background: #e5f4ea; color: var(--pass); font-weight: 700; border-radius: 99px; padding: 2px 12px; font-size: .85rem; margin-bottom: 12px; }
+  .steps { color: var(--muted); font-size: .93rem; margin: 0 0 16px; }
+  figure { margin: 0 0 22px; }
+  figure img { width: 100%; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 22px rgba(10,31,60,.12); display: block; }
+  figcaption { margin-top: 10px; font-size: .97rem; }
+  figcaption b { color: var(--yale); }
+  h3 { margin: 22px 0 10px; font-size: 1.05rem; color: var(--yale); }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; margin-bottom: 8px; }
+  th, td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; }
+  th { background: var(--cream); }
+  td.hl { background: #fff4d6; font-weight: 700; }
+  code { background: var(--cream); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 20px 40px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Campus Customs: App Check</h1>
+  <p>Problem 11 · Live testing of the running site (React + Vite frontend, FastAPI + Pydantic AI backend, <code>campus_customs.db</code>)</p>
+</header>
+
+<main>
+  <div class="meta">
+    <b>Test setup:</b>
+    <ul>
+      <li>Frontend <code>http://localhost:5173</code> (Vite) → backend <code>http://127.0.0.1:8000</code> (run from <code>backend/</code> with <code>uvicorn main:app --port 8000</code>)</li>
+      <li>Agent model: <code>gpt-5.6-luna</code> via Portkey. Data: <code>data/campus_customs.db</code>. Shopper browsing as a <b>guest</b>.</li>
+      <li>All screenshots were captured from the live app on 2026-10-07. Database values were queried directly from SQLite to compare.</li>
+    </ul>
+  </div>
+
+  <nav class="toc">
+    <a href="#check1"><b>Check 1: Chat inventory check</b>Stock &amp; price come from the DB <span class="pass">✔ PASS</span></a>
+    <a href="#check2"><b>Check 2: Chat search → product cards</b>"What hoodies do you have?" <span class="pass">✔ PASS</span></a>
+    <a href="#check3"><b>Check 3: Usability feature (Problem 9)</b>Products toolbar (+ bonus: similar items) <span class="pass">✔ PASS</span></a>
+  </nav>
+
+  <!-- ============ CHECK 1 ============ -->
+  <section class="check" id="check1">
+    <h2>Check 1: Chat checks an item's inventory level (stock &amp; price from the database)</h2>
+    <span class="status">✔ PASS</span>
+    <p class="steps"><b>Steps:</b> Open the <i>Basic Hoodie Big Yale</i> product page → open "Ask the Bulldog" → ask <i>"How many of these are left in XL, and how much is it?"</i></p>
+
+    <figure>
+      <img src="app_check_images/inventory.png" alt="Chat answer: The Basic Hoodie Big Yale has 2 left in XL (low stock), and it's $68.00" />
+      <figcaption><b>What this proves:</b> the agent understood "these" meant the product on screen (page context). It answered <b>"2 left in XL (low stock)… $68.00"</b>, which exactly matches the database (XL = 2, price = 68.0) shown in the table below. The answer came from the <code>check_stock</code> tool, not a guess.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="app_check_images/inventory_product_page.png" alt="Product page showing size tiles with XL Only 2!" />
+      <figcaption><b>What this proves:</b> the same product page, before chatting. The size tiles (XS 15, S 5, M 5, L 8, <b>XL "Only 2!"</b>, XXL 25) and the $68.00 price tag come from the same database, so the page and the chatbot agree.</figcaption>
+    </figure>
+
+    <h3>Database ground truth (<code>inventory</code> + <code>catalogue</code> for <code>basic-hoodie-big-yale</code>)</h3>
+    <table>
+      <tr><th>price</th><th>XS</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th></tr>
+      <tr><td class="hl">68.0</td><td>15</td><td>5</td><td>5</td><td>8</td><td class="hl">2</td><td>25</td></tr>
+    </table>
+  </section>
+
+  <!-- ============ CHECK 2 ============ -->
+  <section class="check" id="check2">
+    <h2>Check 2: Category question → dynamic search-result cards on the page</h2>
+    <span class="status">✔ PASS</span>
+    <p class="steps"><b>Steps:</b> From the Home page, ask the chat <i>"What hoodies do you have?"</i></p>
+
+    <figure>
+      <img src="app_check_images/search_cards_chat.png" alt="Products page showing a Hoodies banner with 27 matches and the chat reply" />
+      <figcaption><b>What this proves:</b> the agent searched the catalog and returned structured results (<code>product_ids</code> + <code>page_title: "Hoodies"</code>). The site then moved itself from Home to the Products page and showed the banner <b>"Hoodies · 27 matches · From your chat: 'What hoodies do you have?'"</b>. The chat confirms "27 items shown on the page →".</figcaption>
+    </figure>
+
+    <figure>
+      <img src="app_check_images/search_cards.png" alt="Grid of hoodie product cards with images, names, prices and short descriptions" />
+      <figcaption><b>What this proves:</b> the matches show up as real product cards: image, name, hangtag price, garment type, short description, and a size-availability strip. The toolbar shows <b>"Showing 27 of 27"</b>, and the DB has exactly <b>27</b> hood-style products (<code>garment_type LIKE '%hood%'</code>).</figcaption>
+    </figure>
+
+    <figure>
+      <img src="app_check_images/search_card_detail.png" alt="Champion Full Zip Hood detail page opened from a chat result card, with Back to Hoodies link" />
+      <figcaption><b>What this proves:</b> clicking a chat-loaded card (<i>Champion Full Zip Hood</i>) still opens the Problem 3 single-item page: large image on one side, full description, price, and stock by size on the other. The <b>"← Back to 'Hoodies'"</b> link returns to the same search results.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ CHECK 3 ============ -->
+  <section class="check" id="check3">
+    <h2>Check 3: Usability feature from Problem 9 (Products toolbar, F1)</h2>
+    <span class="status">✔ PASS</span>
+    <p class="steps"><b>Steps:</b> Products page → click the <i>Hoodies</i> chip → choose <i>"In stock in M"</i> → sort <i>"Price: Low → High"</i>.</p>
+
+    <figure>
+      <img src="app_check_images/usability_toolbar.png" alt="Products toolbar with Hoodies selected, In stock in M, Price Low to High, Showing 21 of 102" />
+      <figcaption><b>What this proves:</b> the toolbar narrows 102 products to <b>21 hoodies a medium-size shopper can actually buy</b>, cheapest first ($45.00, $45.00, $68.00…). Hoodies sold out in M (e.g. <i>Ice Hockey Left Chest Hoodie</i>, M = 0) are correctly hidden. Each card's size strip confirms <b>M</b> is in stock, and sold-out sizes are struck through (e.g. L and XL on the first card).</figcaption>
+    </figure>
+
+    <h3>Bonus: Problem 9 agent feature (B1, <code>find_similar_products</code>)</h3>
+    <p class="steps"><b>Steps:</b> On the <i>Crew Left Chest Hoodie</i> page (M = 0 in the DB), tap the <i>"🐾 Is this in medium?"</i> button.</p>
+    <figure>
+      <img src="app_check_images/usability_similar_items.png" alt="Chat says the Crew Left Chest Hoodie is out of stock in M and suggests similar hoodies in stock in M" />
+      <figcaption><b>What this proves:</b> the bot says clearly that the item is <b>out of stock in M</b>, then uses the new tool to suggest similar hoodies that <b>are</b> in stock in M (Sailing M = 25, Fencing M = 15, Squash M = 5 in the DB), shown as clickable cards. An out-of-stock dead end becomes a possible sale.</figcaption>
+    </figure>
+  </section>
+</main>
+
+<footer>Campus Customs · HW 4 · Screenshots in <code>output/app_check_images/</code></footer>
+</body>
+</html>
