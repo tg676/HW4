@@ -37,7 +37,7 @@ Tapping a chip sends it immediately.
 
 ### B1. New agent tool: `find_similar_products` (rescue out-of-stock sales)
 **What I added:** a new read-only tool (`backend/tools.py` + registered in `backend/agent.py`):
-`find_similar_products(product, size=None, limit=6)` finds items in the **same category** (hoodie, crewneck, tee, quarter-zip, jacket) that are **in stock** (in the requested size, if given). It ranks them by shared colors and search tags and leaves out the original item. `prompts.md` tells the agent to call it whenever a requested size is out of stock or the shopper asks for "something similar." The suggestions appear as cards.
+`find_similar_products(product, size=None, limit=6)` finds items in the **same category** (hoodie, crewneck, tee, quarter-zip, jacket) that are **in stock** (in the requested size, if given). It ranks them by shared colors and search tags and leaves out the original item. `prompt.md` tells the agent to call it whenever a requested size is out of stock or the shopper asks for "something similar." The suggestions appear as cards.
 
 **Why it helps:** about 24% of size rows (145 of 612) are at quantity 0. Before, the bot could only say "sorry, out of stock in M" and list other sizes, which is a dead end for someone who needs an M. Now it says "sorry, but these similar hoodies are in stock in M" and shows them. For the business, an out-of-stock moment becomes a sale instead of a lost customer, and the suggestions are always real, in-stock DB items.
 

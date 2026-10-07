@@ -12,7 +12,7 @@ Shoppers can browse products, create an account and log in, chat about merch, se
 ## The agent (4 files in `backend/`)
 | File | Role |
 |---|---|
-| `backend/prompts/prompts.md` | System prompt: voice, tool-use rules, honesty rules, safety rules |
+| `backend/prompts/prompt.md` | System prompt: voice, tool-use rules, honesty rules, safety rules |
 | `backend/agent.py` | Agent entry/wiring: model via Portkey, prompt, tools, structured output, accuracy guard, loop limits, audit |
 | `backend/tools.py` | Read-only database tools (`search_products`, `get_product_details`, `check_stock`, `find_similar_products`, …) |
 | `backend/models.py` | Pydantic types (`ProductCard`, `ProductDetails`, `StockReport`, `ChatReply`, `CustomerProfile`, …) |

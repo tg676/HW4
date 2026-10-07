@@ -36,7 +36,7 @@ for folder in [BACKEND_DIR, *BACKEND_DIR.parents]:
 
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.6-luna")
 PORTKEY_BASE_URL = os.getenv("PORTKEY_BASE_URL", "https://api.portkey.ai/v1").rstrip("/")
-PROMPT_PATH = BACKEND_DIR / "prompts" / "prompts.md"
+PROMPT_PATH = BACKEND_DIR / "prompts" / "prompt.md"
 MAX_HISTORY_TURNS = 12
 
 
